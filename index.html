@@ -98,15 +98,18 @@ button:active { opacity: 0.7; }
   opacity: 0.75;
 }
 
-/* Suggest box — tối đa 2 dòng, scroll nếu dài hơn */
+/* FIX: Suggest box — đúng 2 dòng, căn trái */
 #suggest-box {
   font-size: 18px;
   font-style: italic;
   color: var(--suggest);
   margin-top: 8px;
   line-height: 1.5;
-  max-height: 3.2em;    /* ~2 dòng */
-  overflow-y: auto;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-align: left;
 }
 
 /* ---- Answer area — min-height vừa đủ, không thừa ---- */
@@ -245,12 +248,14 @@ input[type="file"] { font-size: 18px; width: 100%; margin-bottom: 10px; }
   margin-top: 10px;
 }
 
+/* FIX: search-row có max-width bằng nút tạo mới (600px) */
 .search-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 10px;
+  margin: 0 auto 10px;
   max-width: 600px;
+  width: 100%;
 }
 .search-row input {
   flex: 1 1 140px;
@@ -274,7 +279,8 @@ th, td {
 }
 th { background: var(--muted); }
 td.col-mean    { white-space: normal; min-width: 120px; }
-td.col-example { white-space: normal; min-width: 160px; max-width: 280px; }
+/* FIX: col-example giống col-mean — wrap, không tràn */
+td.col-example { white-space: normal; min-width: 120px; max-width: 200px; word-break: break-word; }
 
 @media (orientation: landscape) {
   table { font-size: 18px; }
@@ -321,6 +327,15 @@ td.col-example { white-space: normal; min-width: 160px; max-width: 280px; }
   font-size: 15px;
   opacity: 0.65;
   margin-top: 4px;
+}
+
+/* FIX: input trong inline edit của cột example — wrap giống mean */
+td input.input-example {
+  width: 100%;
+  min-width: 100px;
+  max-width: 200px;
+  white-space: normal;
+  word-break: break-word;
 }
 ```
 
@@ -1004,7 +1019,7 @@ function editWord(idx) {
       <td><input id="ew_word_${idx}"    value="${w.word}"  autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:100%;font-size:18px;padding:6px"></td>
       <td><input id="ew_type_${idx}"    value="${w.type}"  autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:60px;font-size:18px;padding:6px"></td>
       <td><input id="ew_mean_${idx}"    value="${w.mean}"  autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:100%;font-size:18px;padding:6px"></td>
-      <td><input id="ew_example_${idx}" value="${exVal}"   autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:100%;font-size:18px;padding:6px"></td>
+      <td class="col-example"><input id="ew_example_${idx}" value="${exVal}" autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:100%;font-size:18px;padding:6px"></td>
       <td><input id="ew_read_${idx}"    value="${Number(w.sum_point_reading).toFixed(2)}" autocomplete="off" style="width:70px;font-size:18px;padding:6px"></td>
       <td><input id="ew_next_${idx}"    value="${w.next_reading_time}" autocomplete="off" style="width:110px;font-size:18px;padding:6px"></td>
       <td style="color:green;text-align:center;font-weight:bold">${w.correct_count || 0}</td>
