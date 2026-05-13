@@ -28,315 +28,314 @@
       --suggest:   #aaaaaa;
     }
 
-/* ---- Base ---- */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ---- Base ---- */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  font-family: sans-serif;
-  font-size: 20px;
-  background: var(--bg);
-  color: var(--fg);
-  transition: background 0.2s, color 0.2s;
-}
+    body {
+      font-family: sans-serif;
+      font-size: 20px;
+      background: var(--bg);
+      color: var(--fg);
+      transition: background 0.2s, color 0.2s;
+    }
 
-/* Centered wrapper — học từ + import */
-.app-wrap {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 0 14px 14px;   /* không có top padding — title đảm nhiệm */
-}
+    /* Centered wrapper — học từ + import */
+    .app-wrap {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 14px 14px;   /* không có top padding — title đảm nhiệm */
+    }
 
-/* ---- Tiêu đề Vocabulary ---- */
-.vocab-title {
-  text-align: center;
-  font-size: 24px;
-  font-weight: bold;
-  /* padding ngang 80px để không bị 2 nút fixed che */
-  padding: 14px 80px 12px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 14px;
-  line-height: 1.3;
-}
+    /* ---- Tiêu đề Vocabulary ---- */
+    .vocab-title {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      /* padding ngang 80px để không bị 2 nút fixed che */
+      padding: 14px 80px 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 14px;
+      line-height: 1.3;
+    }
 
-hr  { margin: 16px 0; border: 1px solid var(--border); }
+    hr  { margin: 16px 0; border: 1px solid var(--border); }
 
-/* ---- Buttons ---- */
-button {
-  padding: 14px 18px;
-  font-size: 20px;
-  border: 2px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--fg);
-  cursor: pointer;
-  min-width: 80px;
-  transition: background 0.15s;
-  touch-action: manipulation;
-}
-button:active { opacity: 0.7; }
+    /* ---- Buttons ---- */
+    button {
+      padding: 14px 18px;
+      font-size: 20px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--fg);
+      cursor: pointer;
+      min-width: 80px;
+      transition: background 0.15s;
+      touch-action: manipulation;
+    }
+    button:active { opacity: 0.7; }
 
-/* ---- Word + Answer-btn ngang hàng ---- */
-#word-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-#word-row #sentence {
-  flex: 1;
-  font-size: 36px;
-  font-weight: bold;
-}
+    /* ---- Word + Answer-btn ngang hàng ---- */
+    #word-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    #word-row #sentence {
+      flex: 1;
+      font-size: 36px;
+      font-weight: bold;
+    }
 
-/* Suggest button — nhỏ hơn, căn giữa */
-#suggest-btn {
-  display: block;
-  margin: 0 auto 8px;
-  padding: 8px 20px;
-  font-size: 16px;
-  min-width: unset;
-  opacity: 0.75;
-}
+    /* Suggest button — nhỏ hơn, căn giữa */
+    #suggest-btn {
+      display: block;
+      margin: 0 auto 8px;
+      padding: 8px 20px;
+      font-size: 16px;
+      min-width: unset;
+      opacity: 0.75;
+    }
 
-/* FIX: Suggest box — đúng 2 dòng, căn trái */
-#suggest-box {
-  font-size: 18px;
-  font-style: italic;
-  color: var(--suggest);
-  margin-top: 8px;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-align: left;
-}
+    /* FIX: Suggest box — đúng 2 dòng, căn trái */
+    #suggest-box {
+      font-size: 18px;
+      font-style: italic;
+      color: var(--suggest);
+      margin-top: 8px;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-align: left;
+    }
 
-/* ---- Answer area — min-height vừa đủ, không thừa ---- */
-#answer {
-  font-size: 24px;
-  min-height: 120px;
-  text-align: center;
-}
+    /* ---- Answer area — min-height vừa đủ, không thừa ---- */
+    #answer {
+      font-size: 24px;
+      min-height: 120px;
+      text-align: center;
+    }
 
-.btn-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-.btn-row button { flex: 1; min-width: 120px; }
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .btn-row button { flex: 1; min-width: 120px; }
 
-/* ---- Theme toggle ---- */
-#themeBtn {
-  position: fixed;
-  top: 12px;
-  right: 12px;
-  padding: 8px 14px;
-  font-size: 22px;
-  border-radius: 50px;
-  border: 2px solid var(--border);
-  background: var(--bg);
-  color: var(--fg);
-  cursor: pointer;
-  z-index: 999;
-  min-width: unset;
-}
+    /* ---- Theme toggle ---- */
+    #themeBtn {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      padding: 8px 14px;
+      font-size: 22px;
+      border-radius: 50px;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      color: var(--fg);
+      cursor: pointer;
+      z-index: 999;
+      min-width: unset;
+    }
 
-/* ---- Settings button ---- */
-#settingBtn {
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  padding: 8px 14px;
-  font-size: 22px;
-  border-radius: 50px;
-  border: 2px solid var(--border);
-  background: var(--bg);
-  color: var(--fg);
-  cursor: pointer;
-  z-index: 999;
-  min-width: unset;
-  touch-action: manipulation;
-}
+    /* ---- Settings button ---- */
+    #settingBtn {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      padding: 8px 14px;
+      font-size: 22px;
+      border-radius: 50px;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      color: var(--fg);
+      cursor: pointer;
+      z-index: 999;
+      min-width: unset;
+      touch-action: manipulation;
+    }
 
-/* ---- Settings panel overlay ---- */
-#settingsOverlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  z-index: 1000;
-  align-items: flex-end;
-  justify-content: center;
-}
-#settingsOverlay.open { display: flex; }
+    /* ---- Settings panel overlay ---- */
+    #settingsOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1000;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    #settingsOverlay.open { display: flex; }
 
-#settingsPanel {
-  background: var(--bg);
-  color: var(--fg);
-  width: 100%;
-  max-width: 600px;
-  border-radius: 16px 16px 0 0;
-  padding: 20px 18px 30px;
-  border-top: 2px solid var(--border);
-}
-#settingsPanel h4 { font-size: 22px; margin-bottom: 18px; }
+    #settingsPanel {
+      background: var(--bg);
+      color: var(--fg);
+      width: 100%;
+      max-width: 600px;
+      border-radius: 16px 16px 0 0;
+      padding: 20px 18px 30px;
+      border-top: 2px solid var(--border);
+    }
+    #settingsPanel h4 { font-size: 22px; margin-bottom: 18px; }
 
-.setting-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-  gap: 12px;
-}
-.setting-row label { font-size: 19px; flex: 1; }
-.setting-row input[type="number"] {
-  width: 90px;
-  padding: 10px;
-  font-size: 20px;
-  border: 2px solid var(--input-b);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--fg);
-  text-align: center;
-}
-#settingsSaveBtn { width: 100%; margin-top: 8px; }
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+    .setting-row label { font-size: 19px; flex: 1; }
+    .setting-row input[type="number"] {
+      width: 90px;
+      padding: 10px;
+      font-size: 20px;
+      border: 2px solid var(--input-b);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--fg);
+      text-align: center;
+    }
+    #settingsSaveBtn { width: 100%; margin-top: 8px; }
 
-/* ---- Word count badge ---- */
-#wordCountBadge {
-  display: inline-block;
-  background: var(--badge-bg);
-  color: var(--badge-fg);
-  font-size: 20px;
-  font-weight: bold;
-  padding: 6px 18px;
-  border-radius: 50px;
-}
-#wordCountBadge.hidden { display: none; }
+    /* ---- Word count badge ---- */
+    #wordCountBadge {
+      display: inline-block;
+      background: var(--badge-bg);
+      color: var(--badge-fg);
+      font-size: 20px;
+      font-weight: bold;
+      padding: 6px 18px;
+      border-radius: 50px;
+    }
+    #wordCountBadge.hidden { display: none; }
 
-/* ---- Import ---- */
-input[type="file"] { font-size: 18px; width: 100%; margin-bottom: 10px; }
-#import-result { color: #2a9d2a; font-weight: bold; margin-top: 8px; font-size: 18px; }
+    /* ---- Import ---- */
+    input[type="file"] { font-size: 18px; width: 100%; margin-bottom: 10px; }
+    #import-result { color: #2a9d2a; font-weight: bold; margin-top: 8px; font-size: 18px; }
 
-/* ---- Learn area ---- */
-#learn-area {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  align-items: stretch;
-}
-#word { min-height: 50px; }
+    /* ---- Learn area ---- */
+    #learn-area {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: stretch;
+    }
+    #word { min-height: 50px; }
 
-/* ---- Summary ---- */
-#finish {
-  font-size: 22px;
-  max-height: 80vh;
-  overflow-y: auto;
-  padding: 12px;
-  margin-top: 16px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-}
+    /* ---- Summary ---- */
+    #finish {
+      font-size: 22px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 12px;
+      margin-top: 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
 
-/* ================================================================
-   DEBUG OUTPUT — full screen width
-================================================================ */
-#debug-output {
-  width: 100%;
-  padding: 0 14px 32px;
-  margin-top: 10px;
-}
+    /* ================================================================
+       DEBUG OUTPUT — full screen width
+    ================================================================ */
+    #debug-output {
+      width: 100%;
+      padding: 0 14px 32px;
+      margin-top: 10px;
+    }
 
-/* FIX: search-row có max-width bằng nút tạo mới (600px) */
-.search-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0 auto 10px;
-  max-width: 600px;
-  width: 100%;
-}
-.search-row input {
-  flex: 1 1 140px;
-  padding: 10px;
-  font-size: 18px;
-  border: 2px solid var(--input-b);
-  border-radius: 6px;
-  background: var(--bg);
-  color: var(--fg);
-  min-width: 0;
-}
+    /* FIX: search-row có max-width bằng nút tạo mới (600px) */
+    .search-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 auto 10px;
+      max-width: 600px;
+      width: 100%;
+    }
+    .search-row input {
+      flex: 1 1 140px;
+      padding: 10px;
+      font-size: 18px;
+      border: 2px solid var(--input-b);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--fg);
+      min-width: 0;
+    }
 
-#table-wrap { overflow-x: auto; width: 100%; }
+    #table-wrap { overflow-x: auto; width: 100%; }
 
-table { width: 100%; border-collapse: collapse; font-size: 17px; }
-th, td {
-  padding: 8px 10px;
-  border: 1px solid var(--input-b);
-  text-align: left;
-  white-space: nowrap;
-}
-th { background: var(--muted); }
-td.col-mean    { white-space: normal; min-width: 120px; }
-/* FIX: col-example giống col-mean — wrap, không tràn */
-td.col-example { white-space: normal; min-width: 120px; max-width: 200px; word-break: break-word; }
+    table { width: 100%; border-collapse: collapse; font-size: 17px; }
+    th, td {
+      padding: 8px 10px;
+      border: 1px solid var(--input-b);
+      text-align: left;
+      white-space: nowrap;
+    }
+    th { background: var(--muted); }
+    td.col-mean    { white-space: normal; min-width: 120px; }
+    /* FIX: col-example giống col-mean — wrap, không tràn */
+    td.col-example { white-space: normal; min-width: 120px; max-width: 200px; word-break: break-word; }
 
-@media (orientation: landscape) {
-  table { font-size: 18px; }
-  .search-row input { font-size: 20px; }
-}
+    @media (orientation: landscape) {
+      table { font-size: 18px; }
+      .search-row input { font-size: 20px; }
+    }
 
-/* ---- Edit form (create / inline row) ---- */
-#edit-box {
-  padding: 12px;
-  border: 2px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 12px;
-  max-width: 600px;
-}
-#edit-box label { display: block; margin-bottom: 6px; font-size: 18px; }
-#edit-box input {
-  width: 100%;
-  padding: 10px;
-  font-size: 18px;
-  border: 2px solid var(--input-b);
-  border-radius: 6px;
-  margin-bottom: 10px;
-  background: var(--bg);
-  color: var(--fg);
-}
+    /* ---- Edit form (create / inline row) ---- */
+    #edit-box {
+      padding: 12px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      margin: 0 auto 12px;
+      max-width: 600px;
+    }
+    #edit-box label { display: block; margin-bottom: 6px; font-size: 18px; }
+    #edit-box input {
+      width: 100%;
+      padding: 10px;
+      font-size: 18px;
+      border: 2px solid var(--input-b);
+      border-radius: 6px;
+      margin-bottom: 10px;
+      background: var(--bg);
+      color: var(--fg);
+    }
 
-/* ---- Pagination ---- */
-#pagination {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
-}
-#pagination button {
-  padding: 6px 14px;
-  font-size: 16px;
-  min-width: unset;
-}
-#pagination button.active {
-  background: var(--fg);
-  color: var(--bg);
-}
-#page-info {
-  font-size: 15px;
-  opacity: 0.65;
-  margin-top: 4px;
-}
+    /* ---- Pagination ---- */
+    #pagination {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    #pagination button {
+      padding: 6px 14px;
+      font-size: 16px;
+      min-width: unset;
+    }
+    #pagination button.active {
+      background: var(--fg);
+      color: var(--bg);
+    }
+    #page-info {
+      font-size: 15px;
+      opacity: 0.65;
+      margin-top: 4px;
+    }
 
-/* FIX: input trong inline edit của cột example — wrap giống mean */
-td input.input-example {
-  width: 100%;
-  min-width: 100px;
-  max-width: 200px;
-  white-space: normal;
-  word-break: break-word;
-}
-
+    /* FIX: input trong inline edit của cột example — wrap giống mean */
+    td input.input-example {
+      width: 100%;
+      min-width: 100px;
+      max-width: 200px;
+      white-space: normal;
+      word-break: break-word;
+    }
   </style>
 </head>
 <body>
@@ -393,20 +392,20 @@ td input.input-example {
   <div id="learn-area">
     <div id="wordCountBadge" class="hidden"></div>
 
-<!-- #word: chứa Suggest btn + word-row + suggest-box -->
-<div id="word"></div>
+    <!-- #word: chứa Suggest btn + word-row + suggest-box -->
+    <div id="word"></div>
 
-<!-- #answer: reserved space 180px min-height -->
-<div id="answer"></div>
+    <!-- #answer: reserved space 180px min-height -->
+    <div id="answer"></div>
 
-<div class="btn-row">
-  <button class="learn" onclick="backWord()">Back</button>
-  <button class="learn" onclick="nextWord()">Next</button>
-</div>
-<div class="btn-row">
-  <button id="btnFinish" onclick="finish()">Finish</button>
-  <button id="btnStart"  onclick="start()" style="display:none">Start</button>
-</div>
+    <div class="btn-row">
+      <button class="learn" onclick="backWord()">Back</button>
+      <button class="learn" onclick="nextWord()">Next</button>
+    </div>
+    <div class="btn-row">
+      <button id="btnFinish" onclick="finish()">Finish</button>
+      <button id="btnStart"  onclick="start()" style="display:none">Start</button>
+    </div>
 
   </div>
 
