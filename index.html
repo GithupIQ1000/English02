@@ -785,7 +785,7 @@ function saveVocabulary() {
     let   newDate     = new Date(today());
 
     if (w.status === 1) {
-      const bonus = bonusBase + Math.round((point / bonusDiv + Math.random() * 10) * 100) / 100;
+      const bonus = bonusBase + Math.round((point / bonusDiv + Math.random()) * 100) / 100;
       point += bonus;
       if (w.Nx_points) {
         point = point < nxThreshold
