@@ -792,7 +792,16 @@ function saveVocabulary() {
           ? Math.round(point * Nx * 100) / 100
           : point + Math.round((point / 6) * Nx * 100) / 100;
       }
-      newDate.setDate(newDate.getDate() + Math.floor(point));
+      const todayObj = new Date(today());
+      const nextObj  = new Date(w.next_reading_time);
+      const diffDay = Math.floor(
+        (todayObj - nextObj) / (1000 * 60 * 60 * 24)
+      );
+  
+      if (diffDay > 1) {
+        point += diffDay;
+      }
+      newDate.setDate(newDate.getDate() + Math.round(point));
     } else {
       if (point < 10) {
         point = Math.round(point * (2 / 3) * 100) / 100 - bonusBase;
@@ -801,7 +810,7 @@ function saveVocabulary() {
         point = Math.round(point * (3 / 4) * 100) / 100;
       }
       if (w.Nx_points) point = Math.round(point / Nx * 100) / 100;
-      newDate.setDate(newDate.getDate() + Math.floor(point * 2 / 3));
+      newDate.setDate(newDate.getDate() + Math.round(point * 2 / 3));
     }
 
     const nextDate = newDate.toISOString().slice(0, 10);
