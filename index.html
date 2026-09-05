@@ -1,118 +1,340 @@
 <!DOCTYPE html>
-
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vocabulary</title>
-  <style>
-    /* ---- Theme variables ---- */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark light">
+<title>Vocabulary</title>
+<style>
+    /* ============================================================
+       THEME — mặc định DARK, chỉ đen / trắng / xám
+    ============================================================ */
     :root {
-      --bg:        #ffffff;
-      --fg:        #111111;
-      --border:    #333333;
-      --muted:     #f3f3f3;
-      --input-b:   #cccccc;
-      --badge-bg:  #111;
-      --badge-fg:  #fff;
-      --suggest:   #666666;
-    }
-    body.dark {
-      --bg:        #1a1a1a;
-      --fg:        #eeeeee;
-      --border:    #888888;
-      --muted:     #2a2a2a;
-      --input-b:   #555555;
-      --badge-bg:  #eeeeee;
-      --badge-fg:  #111111;
-      --suggest:   #aaaaaa;
+      --bg: #ffffff;
+      --fg: #111111;
+      --panel: #f4f4f4;
+      --panel-2: #ffffff;
+      --border: #202020;
+      --input-bg: #ffffff;
+      --input-border: #a8a8a8;
+      --muted: #555555;
+      --soft: #e9e9e9;
+      --focus: #000000;
+      --success: #111111;
+      --danger: #111111;
+      --overlay: rgba(0, 0, 0, 0.52);
+      --shadow: 0 10px 30px rgba(0,0,0,.12);
     }
 
-    /* ---- Base ---- */
+    body.dark {
+      --bg: #0f0f0f;
+      --fg: #f5f5f5;
+      --panel: #171717;
+      --panel-2: #1d1d1d;
+      --border: #eeeeee;
+      --input-bg: #111111;
+      --input-border: #676767;
+      --muted: #b6b6b6;
+      --soft: #262626;
+      --focus: #ffffff;
+      --success: #ffffff;
+      --danger: #ffffff;
+      --overlay: rgba(0, 0, 0, 0.76);
+      --shadow: 0 14px 35px rgba(0,0,0,.38);
+    }
+
+    /* ============================================================
+       BASE
+    ============================================================ */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html { min-height: 100%; }
+
     body {
-      font-family: sans-serif;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 20px;
+      line-height: 1.4;
       background: var(--bg);
       color: var(--fg);
-      transition: background 0.2s, color 0.2s;
+      transition: background .18s ease, color .18s ease;
     }
 
-    /* Centered wrapper — học từ + import */
-    .app-wrap {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 0 14px 14px;   /* không có top padding — title đảm nhiệm */
-    }
+    button, input { font: inherit; }
 
-    /* ---- Tiêu đề Vocabulary ---- */
-    .vocab-title {
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      /* padding ngang 80px để không bị 2 nút fixed che */
-      padding: 14px 80px 12px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 14px;
-      line-height: 1.3;
-    }
-
-    hr  { margin: 16px 0; border: 1px solid var(--border); }
-
-    /* ---- Buttons ---- */
     button {
-      padding: 14px 18px;
-      font-size: 20px;
       border: 2px solid var(--border);
-      border-radius: 8px;
-      background: var(--bg);
+      border-radius: 10px;
+      padding: 13px 18px;
+      min-width: 88px;
+      background: var(--panel-2);
       color: var(--fg);
       cursor: pointer;
-      min-width: 80px;
-      transition: background 0.15s;
       touch-action: manipulation;
+      transition: transform .08s ease, background .15s ease, color .15s ease;
     }
-    button:active { opacity: 0.7; }
 
-    /* ---- Word + Answer-btn ngang hàng ---- */
-    #word-row {
+    button:hover { background: var(--soft); }
+    button:active { transform: translateY(1px); opacity: .78; }
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--fg);
+      outline-offset: 2px;
+    }
+
+    hr {
+      margin: 18px 0;
+      border: 0;
+      border-top: 1px solid var(--border);
+      opacity: .65;
+    }
+
+    /* ============================================================
+       FIXED CONTROLS
+    ============================================================ */
+    #themeBtn,
+    #settingBtn,
+    #menuBtn {
+      position: fixed;
+      top: 12px;
+      z-index: 2000;
+      min-width: unset;
+      width: 48px;
+      height: 48px;
+      padding: 6px;
+      border-radius: 50%;
+      background: var(--panel-2);
+      box-shadow: var(--shadow);
+      font-size: 22px;
+    }
+
+    #menuBtn { left: 12px; }
+    #settingBtn { left: 68px; }
+    #themeBtn { right: 12px; }
+
+    /* ============================================================
+       APP HEADER
+    ============================================================ */
+    .app-wrap {
+      width: min(600px, 100%);
+      margin: 0 auto;
+      padding: 0 14px 28px;
+    }
+
+    .vocab-title {
+      text-align: center;
+      font-size: 25px;
+      font-weight: 800;
+      padding: 16px 124px 14px;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.25;
+    }
+
+
+    #import-result {
+      min-height: 24px;
+      margin-top: 8px;
+      color: var(--fg);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    /* ============================================================
+       DAILY ACHIEVEMENT
+    ============================================================ */
+    #achievement-card {
+      margin: 14px 0 16px;
+      padding: 15px;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      background: var(--panel);
+    }
+
+    .achievement-head {
       display: flex;
       align-items: center;
-      gap: 14px;
-    }
-    #word-row #sentence {
-      flex: 1;
-      font-size: 36px;
-      font-weight: bold;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
     }
 
-    /* Suggest button — nhỏ hơn, căn giữa */
+    .achievement-title {
+      font-weight: 800;
+      font-size: 21px;
+    }
+
+    .achievement-date {
+      color: var(--muted);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .achievement-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .stat-box {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 8px;
+      text-align: center;
+      background: var(--panel-2);
+    }
+
+    .stat-label {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+
+    .stat-value {
+      display: block;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .achievement-note {
+      margin-top: 10px;
+      min-height: 22px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    /* ============================================================
+       LEARN AREA
+       Vị trí của Suggest / Word+Answer / Back+Next / Ok+Forget
+       được giữ nguyên theo file gốc.
+    ============================================================ */
+    #learn-area {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    #wordCountBadge {
+      align-self: center;
+      padding: 6px 16px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--fg);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    #wordCountBadge.hidden { display: none; }
+
+    #word {
+      min-height: 88px;
+    }
+
+    /* Suggest giữ đúng phía trên word */
     #suggest-btn {
       display: block;
-      margin: 0 auto 8px;
-      padding: 8px 20px;
-      font-size: 16px;
+      margin: 0 auto 9px;
+      padding: 8px 18px;
       min-width: unset;
-      opacity: 0.75;
+      font-size: 16px;
+      opacity: .82;
     }
 
-    /* Suggest box — tối đa 2 dòng, scroll nếu dài hơn */
     #suggest-box {
-      font-size: 18px;
-      font-style: italic;
-      color: var(--suggest);
-      margin-top: 8px;
-      line-height: 1.5;
-      max-height: 3.2em;
+      margin-top: 9px;
+      max-height: 4.5em;
       overflow-y: auto;
+      color: var(--muted);
+      font-size: 17px;
+      font-style: italic;
+      line-height: 1.5;
+      text-align: center;
+      overflow-wrap: anywhere;
     }
 
-    /* ---- Answer area — min-height vừa đủ, không thừa ---- */
-    #answer {
-      font-size: 24px;
-      min-height: 120px;
+    /* Word + Answer: từ luôn nằm chính giữa, Answer luôn neo bên phải */
+    #word-row {
+      position: relative;
+      width: 100%;
+      min-height: 72px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr);
+      align-items: center;
+      column-gap: 10px;
+    }
+
+    #word-row .word-main {
+      grid-column: 2;
+      grid-row: 1;
+      width: max-content;
+      max-width: min(100%, calc(100vw - 150px));
+      justify-self: center;
+      min-width: 0;
+    }
+
+    #word-row #sentence {
+      width: 100%;
+      font-size: clamp(31px, 8vw, 40px);
+      line-height: 1.12;
+      font-weight: 800;
       text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .word-main {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .phonetic {
+      margin-top: 5px;
+      font-size: 20px;
+      line-height: 1.25;
+      font-weight: 600;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    /* Answer luôn ở mép phải của hàng, không bị kéo theo vị trí của từ */
+    #word-row > button {
+      grid-column: 3;
+      grid-row: 1;
+      justify-self: end;
+      flex: 0 0 auto;
+      z-index: 2;
+    }
+
+    /* Answer vẫn là vùng bên dưới word như file gốc */
+    #answer {
+      min-height: 130px;
+      padding: 8px 0;
+      text-align: center;
+      font-size: 23px;
+    }
+
+    .answer-step {
+      animation: answerIn .12s ease-out;
+    }
+
+    @keyframes answerIn {
+      from { opacity: 0; transform: translateY(2px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .answer-type {
+      font-size: 23px;
+      font-weight: 700;
+    }
+
+    .answer-meaning {
+      margin-top: 6px;
+      font-size: 25px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
     }
 
     .btn-row {
@@ -121,309 +343,440 @@
       gap: 10px;
       margin-bottom: 10px;
     }
-    .btn-row button { flex: 1; min-width: 120px; }
 
-    /* ---- Theme toggle ---- */
-    #themeBtn {
-      position: fixed;
-      top: 12px;
-      right: 12px;
-      padding: 8px 14px;
-      font-size: 22px;
-      border-radius: 50px;
-      border: 2px solid var(--border);
-      background: var(--bg);
-      color: var(--fg);
-      cursor: pointer;
-      z-index: 999;
-      min-width: unset;
+    .btn-row button {
+      flex: 1 1 0;
+      min-width: 120px;
     }
 
-    /* ---- Settings button ---- */
-    #settingBtn {
-      position: fixed;
-      top: 12px;
-      left: 12px;
-      padding: 8px 14px;
-      font-size: 22px;
-      border-radius: 50px;
-      border: 2px solid var(--border);
-      background: var(--bg);
-      color: var(--fg);
-      cursor: pointer;
-      z-index: 999;
-      min-width: unset;
-      touch-action: manipulation;
+    /* Back / Next giữ một hàng như cũ */
+    #learn-area > .btn-row:nth-of-type(1) {
+      margin-bottom: 0;
     }
 
-    /* ---- Settings panel overlay ---- */
+    /* Finish / Start là nút phụ, không ảnh hưởng bố cục 6 nút học */
+    #btnFinish,
+    #btnStart {
+      width: 100%;
+    }
+
+    /* ============================================================
+       MENU PANEL
+    ============================================================ */
+    #menuOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2900;
+      align-items: flex-end;
+      justify-content: center;
+      background: var(--overlay);
+    }
+
+    #menuOverlay.open { display: flex; }
+
+    #menuPanel {
+      width: min(600px, 100%);
+      padding: 16px 18px 24px;
+      border: 2px solid var(--border);
+      border-bottom: 0;
+      border-radius: 16px 16px 0 0;
+      background: var(--bg);
+      color: var(--fg);
+      box-shadow: var(--shadow);
+    }
+
+    .menu-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .menu-head h4 { font-size: 22px; }
+
+    #menuCloseBtn {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      padding: 4px;
+      border-radius: 50%;
+    }
+
+    .menu-file {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .menu-file > button { flex: 0 0 auto; }
+
+    .selected-file {
+      min-width: 0;
+      color: var(--muted);
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .menu-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .menu-actions button {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .menu-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    /* ============================================================
+       SETTINGS PANEL
+    ============================================================ */
     #settingsOverlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 1000;
+      z-index: 3000;
       align-items: flex-end;
       justify-content: center;
+      background: var(--overlay);
     }
+
     #settingsOverlay.open { display: flex; }
 
     #settingsPanel {
+      width: min(600px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 20px 18px 28px;
+      border: 2px solid var(--border);
+      border-bottom: 0;
+      border-radius: 16px 16px 0 0;
       background: var(--bg);
       color: var(--fg);
-      width: 100%;
-      max-width: 600px;
-      border-radius: 16px 16px 0 0;
-      padding: 20px 18px 30px;
-      border-top: 2px solid var(--border);
+      box-shadow: var(--shadow);
     }
-    #settingsPanel h4 { font-size: 22px; margin-bottom: 18px; }
+
+    #settingsPanel h4 {
+      margin-bottom: 18px;
+      font-size: 22px;
+    }
+
+    .settings-note {
+      margin-bottom: 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
 
     .setting-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 16px;
       gap: 12px;
+      margin-bottom: 14px;
     }
-    .setting-row label { font-size: 19px; flex: 1; }
+
+    .setting-row label {
+      flex: 1;
+      font-size: 17px;
+    }
+
     .setting-row input[type="number"] {
-      width: 90px;
-      padding: 10px;
-      font-size: 20px;
-      border: 2px solid var(--input-b);
+      width: 95px;
+      padding: 9px;
+      border: 2px solid var(--input-border);
       border-radius: 8px;
-      background: var(--bg);
+      background: var(--input-bg);
       color: var(--fg);
       text-align: center;
     }
-    #settingsSaveBtn { width: 100%; margin-top: 8px; }
 
-    /* ---- Word count badge ---- */
-    #wordCountBadge {
-      display: inline-block;
-      background: var(--badge-bg);
-      color: var(--badge-fg);
-      font-size: 20px;
-      font-weight: bold;
-      padding: 6px 18px;
-      border-radius: 50px;
-    }
-    #wordCountBadge.hidden { display: none; }
-
-    /* ---- Import ---- */
-    input[type="file"] { font-size: 18px; width: 100%; margin-bottom: 10px; }
-    #import-result { color: #2a9d2a; font-weight: bold; margin-top: 8px; font-size: 18px; }
-
-    /* ---- Learn area ---- */
-    #learn-area {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      align-items: stretch;
-    }
-    #word { min-height: 50px; }
-
-    /* ---- Summary ---- */
-    #finish {
-      font-size: 22px;
-      max-height: 80vh;
-      overflow-y: auto;
-      padding: 12px;
-      margin-top: 16px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+    #settingsSaveBtn {
+      width: 100%;
+      margin-top: 5px;
     }
 
-    /* ================================================================
-       DEBUG OUTPUT — full screen width
-    ================================================================ */
+    /* ============================================================
+       DEBUG / DATA TABLE
+    ============================================================ */
     #debug-output {
       width: 100%;
-      padding: 0 14px 32px;
       margin-top: 10px;
+      padding: 0 14px 32px;
     }
 
-    /* FIX: search-row có max-width bằng nút tạo mới (600px) */
+    .debug-tools {
+      max-width: 600px;
+      margin: 0 auto 10px;
+    }
+
     .search-row {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      width: min(600px, 100%);
       margin: 0 auto 10px;
-      max-width: 600px;
-      width: 100%;
     }
+
     .search-row input {
-      flex: 1 1 140px;
-      padding: 10px;
-      font-size: 18px;
-      border: 2px solid var(--input-b);
-      border-radius: 6px;
-      background: var(--bg);
-      color: var(--fg);
+      flex: 1 1 160px;
       min-width: 0;
+      padding: 10px;
+      border: 2px solid var(--input-border);
+      border-radius: 8px;
+      background: var(--input-bg);
+      color: var(--fg);
+      font-size: 18px;
     }
 
-    #table-wrap { overflow-x: auto; width: 100%; }
+    #table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
 
-    table { width: 100%; border-collapse: collapse; font-size: 17px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 16px;
+    }
+
     th, td {
       padding: 8px 10px;
-      border: 1px solid var(--input-b);
+      border: 1px solid var(--input-border);
       text-align: left;
+      vertical-align: top;
       white-space: nowrap;
     }
-    th { background: var(--muted); }
-    td.col-mean    { white-space: normal; min-width: 120px; }
-    /* FIX: col-example giống col-mean — wrap, không tràn */
-    td.col-example { white-space: normal; min-width: 120px; max-width: 200px; word-break: break-word; }
 
-    @media (orientation: landscape) {
-      table { font-size: 18px; }
-      .search-row input { font-size: 20px; }
+    th { background: var(--soft); }
+
+    td.col-mean,
+    td.col-example {
+      white-space: normal;
+      min-width: 120px;
+      max-width: 220px;
+      word-break: break-word;
     }
 
-    /* ---- Edit form (create / inline row) ---- */
-    #edit-box {
-      padding: 12px;
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      margin: 0 auto 12px;
-      max-width: 600px;
-    }
-    #edit-box label { display: block; margin-bottom: 6px; font-size: 18px; }
-    #edit-box input {
-      width: 100%;
-      padding: 10px;
-      font-size: 18px;
-      border: 2px solid var(--input-b);
-      border-radius: 6px;
-      margin-bottom: 10px;
-      background: var(--bg);
-      color: var(--fg);
+    td.col-phonetic {
+      white-space: normal;
+      min-width: 110px;
+      max-width: 180px;
+      word-break: break-word;
     }
 
-    /* ---- Pagination ---- */
     #pagination {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
       margin-top: 10px;
     }
+
     #pagination button {
-      padding: 6px 14px;
-      font-size: 16px;
       min-width: unset;
+      padding: 6px 13px;
+      font-size: 15px;
     }
+
     #pagination button.active {
       background: var(--fg);
       color: var(--bg);
     }
+
     #page-info {
-      font-size: 15px;
-      opacity: 0.65;
       margin-top: 4px;
+      color: var(--muted);
+      font-size: 14px;
     }
 
-    /* FIX: input trong inline edit của cột example — wrap giống mean */
-    td input.input-example {
+    #edit-box {
+      width: min(600px, 100%);
+      margin: 0 auto 12px;
+      padding: 14px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: var(--panel);
+    }
+
+    #edit-box label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 16px;
+    }
+
+    #edit-box input {
       width: 100%;
-      min-width: 100px;
-      max-width: 200px;
-      white-space: normal;
-      word-break: break-word;
+      margin-bottom: 10px;
+      padding: 9px;
+      border: 2px solid var(--input-border);
+      border-radius: 7px;
+      background: var(--input-bg);
+      color: var(--fg);
     }
-  </style>
-</head>
-<body>
 
-<button id="themeBtn" onclick="toggleTheme()">☀️</button>
-<button id="settingBtn" onclick="openSettings()">⚙️</button>
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 440px) {
+      body { font-size: 18px; }
+      .app-wrap { padding-left: 10px; padding-right: 10px; }
 
-<!-- ===== SETTINGS PANEL ===== -->
+      /* 3 ô thành tích luôn giữ đúng 1 hàng ngang trên mobile */
+      .achievement-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+      .stat-box {
+        min-width: 0;
+        padding: 9px 4px;
+      }
+      .stat-label {
+        font-size: 10.5px;
+        line-height: 1.2;
+        min-height: 2.4em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .stat-value { font-size: 19px; }
 
-<div id="settingsOverlay" onclick="closeSettingsIfOutside(event)">
-  <div id="settingsPanel">
-    <h4>⚙️ Cài đặt thuật toán</h4>
-    <div class="setting-row">
-      <label>Nx multiplier<br><small style="font-size:15px;opacity:0.6">nhân điểm khi bấm N_point</small></label>
-      <input type="number" id="s_nx" step="0.1" min="1">
+      .achievement-head { align-items: flex-start; flex-direction: column; }
+      #word-row {
+        grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr);
+        column-gap: 6px;
+        min-height: 68px;
+      }
+      #word-row .word-main {
+        max-width: calc(100vw - 112px);
+      }
+      #word-row > button {
+        min-width: 82px;
+        padding-left: 13px;
+        padding-right: 13px;
+      }
+      #answer { min-height: 120px; }
+      .menu-file { align-items: stretch; flex-direction: column; }
+      .menu-file > button { width: 100%; }
+    }
+
+    @media (orientation: landscape) {
+      table { font-size: 17px; }
+      .search-row input { font-size: 19px; }
+    }
+  
+    /* Thành tích hôm nay: luôn 3 ô trên một hàng, kể cả mobile */
+    .achievement-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+    .stat-box { min-width: 0; padding: 10px 5px; }
+    .stat-label, .stat-value { overflow-wrap: anywhere; }
+    @media (max-width: 440px) {
+      .achievement-title { font-size: 18px; }
+      .achievement-date { font-size: 12px; }
+      .stat-label { font-size: 11px; }
+      .stat-value { font-size: 18px; }
+      .achievement-card { min-width: 0; }
+    }
+  </style></head>
+<body class="dark">
+  <button id="menuBtn" type="button" onclick="toggleMenu()" aria-label="Mở menu" title="Menu">☰</button>
+  <button id="settingBtn" type="button" onclick="openSettings()" aria-label="Cài đặt" title="Cài đặt">⚙️</button>
+  <button id="themeBtn" type="button" onclick="toggleTheme()" aria-label="Chuyển sang sáng" title="Chuyển sang sáng">☀️</button>
+
+
+  <div id="menuOverlay" onclick="closeMenuIfOutside(event)">
+    <div id="menuPanel" role="dialog" aria-modal="true" aria-label="Menu dữ liệu">
+      <div class="menu-head">
+        <h4>☰ Menu</h4>
+        <button id="menuCloseBtn" type="button" onclick="closeMenu()" aria-label="Đóng menu">✕</button>
+      </div>
+      <div class="menu-file">
+        <button type="button" onclick="chooseJSONFile()">📁 Chọn file JSON</button>
+        <div id="selected-file" class="selected-file">Chưa chọn file</div>
+      </div>
+      <div class="menu-actions">
+        <button type="button" onclick="importJSON(); closeMenu()">Nhập dữ liệu</button>
+        <button type="button" onclick="exportJSON(); closeMenu()">Xuất JSON</button>
+        <button type="button" onclick="toggleDebug(); closeMenu()">Show DS</button>
+        <button type="button" onclick="deleteAllWords(); closeMenu()">Xóa toàn bộ</button>
+      </div>
+      <div class="menu-note">Giao diện và bố cục lấy theo bản 2; toàn bộ logic học/điểm vẫn theo index.html.</div>
     </div>
-    <div class="setting-row">
-      <label>Bonus base<br><small style="font-size:15px;opacity:0.6">điểm cộng cố định khi đúng / trừ khi sai &lt;10</small></label>
-      <input type="number" id="s_bonus_base" step="0.1" min="0">
-    </div>
-    <div class="setting-row">
-      <label>Bonus divisor<br><small style="font-size:15px;opacity:0.6">chia điểm hiện tại để tính bonus (5.5)</small></label>
-      <input type="number" id="s_bonus_div" step="0.1" min="0.1">
-    </div>
-    <div class="setting-row">
-      <label>Nx threshold<br><small style="font-size:15px;opacity:0.6">ngưỡng điểm đổi công thức Nx (45)</small></label>
-      <input type="number" id="s_nx_threshold" step="1" min="1">
-    </div>
-    <button id="settingsSaveBtn" onclick="saveSettings()">💾 Lưu cài đặt</button>
   </div>
-</div>
 
-<!-- ===== CENTERED WRAPPER ===== -->
-
-<div class="app-wrap">
-
-  <!-- ===== TIÊU ĐỀ ===== -->
-
-  <div class="vocab-title">Vocabulary</div>
-
-  <!-- ===== IMPORT / EXPORT ===== -->
-
-  <input type="file" id="jsonFile" accept=".json">
-  <div class="btn-row">
-    <button onclick="importJSON()">Nhập dữ liệu</button>
-    <button onclick="exportJSON()">Xuất JSON</button>
-    <button id="btnToggleDebug" onclick="toggleDebug()">Show DS</button>
-  </div>
-  <div id="import-result"></div>
-  <hr>
-
-  <!-- ===== HỌC TỪ ===== -->
-
-  <div id="learn-area">
-    <div id="wordCountBadge" class="hidden"></div>
-
-    <!-- #word: chứa Suggest btn + word-row + suggest-box -->
-    <div id="word"></div>
-
-    <!-- #answer: reserved space 180px min-height -->
-    <div id="answer"></div>
-
-    <div class="btn-row">
-      <button class="learn" onclick="backWord()">Back</button>
-      <button class="learn" onclick="nextWord()">Next</button>
+  <div id="settingsOverlay" onclick="closeSettingsIfOutside(event)">
+    <div id="settingsPanel" role="dialog" aria-modal="true" aria-label="Cài đặt thuật toán">
+      <h4>⚙️ Cài đặt thuật toán</h4>
+      <div class="settings-note">Giữ nguyên các tham số của công thức điểm hiện tại.</div>
+      <div class="setting-row"><label>Nx multiplier<br><small>nhân điểm khi bấm N_point</small></label><input type="number" id="s_nx" step="0.1" min="1"></div>
+      <div class="setting-row"><label>Bonus base<br><small>điểm cộng cố định khi đúng / trừ khi sai &lt;10</small></label><input type="number" id="s_bonus_base" step="0.1" min="0"></div>
+      <div class="setting-row"><label>Bonus divisor<br><small>chia điểm hiện tại để tính bonus</small></label><input type="number" id="s_bonus_div" step="0.1" min="0.1"></div>
+      <div class="setting-row"><label>Nx threshold<br><small>ngưỡng điểm đổi công thức Nx</small></label><input type="number" id="s_nx_threshold" step="1" min="1"></div>
+      <button id="settingsSaveBtn" type="button" onclick="saveSettings()">💾 Lưu cài đặt</button>
     </div>
-    <div class="btn-row">
-      <button id="btnFinish" onclick="finish()">Finish</button>
-      <button id="btnStart"  onclick="start()" style="display:none">Start</button>
-    </div>
-
   </div>
 
-  <div id="finish"></div>
+  <div class="app-wrap">
+    <div class="vocab-title">Vocabulary</div>
+    <input type="file" id="jsonFile" accept=".json" hidden>
+    <div id="import-result" aria-live="polite"></div>
 
-</div><!-- end .app-wrap -->
+    <section id="achievement-card" aria-label="Thành tích hôm nay">
+      <div class="achievement-head">
+        <div class="achievement-title">📊 Thành tích hôm nay</div>
+        <div id="achievement-date" class="achievement-date"></div>
+      </div>
+      <div class="achievement-grid">
+        <div class="stat-box"><span class="stat-label">Đã kiểm tra</span><span id="stat-checked" class="stat-value">0</span></div>
+        <div class="stat-box"><span class="stat-label">Cần kiểm tra</span><span id="stat-due" class="stat-value">0</span></div>
+        <div class="stat-box"><span class="stat-label">So với hôm qua</span><span id="stat-delta" class="stat-value">—</span></div>
+      </div>
+      <div id="achievement-note" class="achievement-note" aria-live="polite"></div>
+    </section>
+    <hr>
 
-<!-- ===== DEBUG — full width ===== -->
-
-<div id="debug-output"></div>
-
+    <div id="learn-area">
+      <div id="wordCountBadge" class="hidden"></div>
+      <div id="word"></div>
+      <div id="answer"></div>
+      <div class="btn-row"><button class="learn" type="button" onclick="backWord()">Back</button><button class="learn" type="button" onclick="nextWord()">Next</button></div>
+      <div class="btn-row"><button id="btnFinish" type="button" onclick="finish()">Finish</button><button id="btnStart" type="button" onclick="start()" style="display:none">Start</button></div>
+    </div>
+    <div id="finish"></div>
+  </div>
+  <div id="debug-output"></div>
+</body>
 <script>
+
 /* ============================================================
    THEME
 ============================================================ */
-let isDark = false;
-function toggleTheme() {
-  isDark = !isDark;
-  document.body.classList.toggle("dark", isDark);
-  document.getElementById("themeBtn").textContent = isDark ? "🌙" : "☀️";
-}
+const THEME_KEY = "vocab_theme";
+let isDark = true;
+function applyTheme(dark){ isDark=!!dark; document.body.classList.toggle('dark',isDark); const b=document.getElementById('themeBtn'); if(b)b.textContent=isDark?'☀️':'🌙'; }
+function loadTheme(){ applyTheme(localStorage.getItem(THEME_KEY)!=='light'); }
+function toggleTheme(){ applyTheme(!isDark); localStorage.setItem(THEME_KEY,isDark?'dark':'light'); }
+
+/* ============================================================
+   MENU
+============================================================ */
+function toggleMenu(){ document.getElementById("menuOverlay").classList.toggle("open"); }
+function closeMenu(){ document.getElementById("menuOverlay").classList.remove("open"); }
+function closeMenuIfOutside(e){ if(e.target===document.getElementById("menuOverlay")) closeMenu(); }
+function chooseJSONFile(){ document.getElementById("jsonFile").click(); }
+const jsonFileEl = document.getElementById("jsonFile");
+if (jsonFileEl) jsonFileEl.addEventListener("change", () => {
+  const file = jsonFileEl.files[0];
+  const label = document.getElementById("selected-file");
+  if (label) label.textContent = file ? file.name : "Chưa chọn file";
+});
 
 /* ============================================================
    SETTINGS
@@ -481,6 +834,9 @@ dbReq.onupgradeneeded = e => {
 dbReq.onsuccess = e => {
   db = e.target.result;
   loadSettings();
+  readDailyState();
+  readDueSnapshot();
+  renderAchievement();
   takeVocabulary();
 };
 
@@ -496,6 +852,14 @@ const today = () => {
 
 const getStore    = (mode) => db.transaction("words", mode).objectStore("words");
 const setEl       = (id, html) => document.getElementById(id).innerHTML = html;
+const escapeHtml = value => String(value ?? "")
+  .replace(/&/g, "&amp;")
+  .replace(/</g, "&lt;")
+  .replace(/>/g, "&gt;")
+  .replace(/"/g, "&quot;")
+  .replace(/'/g, "&#39;");
+const escapeAttr = value => escapeHtml(value);
+
 const showLearnBtns = (show) =>
   document.querySelectorAll(".learn").forEach(b => b.style.display = show ? "inline-block" : "none");
 
@@ -517,6 +881,58 @@ function keyIndex(key) {
 }
 
 function keyByIndex(i) { return _keyMap[i]; }
+
+/* ============================================================
+   DAILY ACHIEVEMENT — chỉ thêm phần thống kê, không thay đổi
+   logic học/điểm/lịch ôn của index.html
+============================================================ */
+const DAILY_KEY = "vocab_daily_state";
+const DUE_SNAPSHOT_KEY = "vocab_due_snapshot";
+let dailyState = { date: today(), checkedKeys: [] };
+let yesterdayDueCount = null;
+let todayDueCount = 0;
+
+const getYesterday = () => {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+};
+
+function readDailyState(){
+  try {
+    const saved = JSON.parse(localStorage.getItem(DAILY_KEY));
+    if (saved?.date === today() && Array.isArray(saved.checkedKeys)) {
+      dailyState = { date: today(), checkedKeys: [...new Set(saved.checkedKeys)] }; return;
+    }
+  } catch {}
+  dailyState = { date: today(), checkedKeys: [] }; saveDailyState();
+}
+function saveDailyState(){ localStorage.setItem(DAILY_KEY, JSON.stringify({date: today(), checkedKeys:[...new Set(dailyState.checkedKeys)]})); }
+function readDueSnapshot(){
+  try {
+    const saved = JSON.parse(localStorage.getItem(DUE_SNAPSHOT_KEY));
+    if (saved?.date === today()) { todayDueCount = Number(saved.count)||0; yesterdayDueCount = saved.prevDate===getYesterday() && Number.isFinite(Number(saved.prevCount)) ? Number(saved.prevCount) : null; return true; }
+    yesterdayDueCount = saved?.date===getYesterday() && Number.isFinite(Number(saved.count)) ? Number(saved.count) : null;
+    todayDueCount = 0; return false;
+  } catch { yesterdayDueCount=null; todayDueCount=0; return false; }
+}
+function ensureTodayDueSnapshot(n){
+  const count=Number(n)||0;
+  if(readDueSnapshot()){renderAchievement();return;}
+  const prev=yesterdayDueCount; todayDueCount=count;
+  localStorage.setItem(DUE_SNAPSHOT_KEY, JSON.stringify({date:today(),count:todayDueCount,prevDate:prev===null?null:getYesterday(),prevCount:prev}));
+  renderAchievement();
+}
+function markDailyChecked(w){ const key=w.key || `${w.word}|${w.type}|${w.mean}`; if(!dailyState.checkedKeys.includes(key)){dailyState.checkedKeys.push(key);saveDailyState();} renderAchievement(); }
+function renderAchievement(){
+  const a=document.getElementById('achievement-date'),c=document.getElementById('stat-checked'),d=document.getElementById('stat-due'),delta=document.getElementById('stat-delta'),note=document.getElementById('achievement-note');
+  if(!a||!c||!d||!delta||!note)return;
+  c.textContent=dailyState.checkedKeys.length; d.textContent=todayDueCount; a.textContent=today();
+  if(yesterdayDueCount===null){delta.textContent='—';note.textContent='';note.style.display='none';return;}
+  note.style.display='block'; const diff=todayDueCount-yesterdayDueCount; delta.textContent=diff>0?`+${diff}`:String(diff);
+  note.textContent=diff>0?`Hôm nay có thêm ${diff} từ cần kiểm tra so với hôm qua.`:diff<0?`Hôm nay có ít hơn ${Math.abs(diff)} từ cần kiểm tra so với hôm qua.`:'Số từ cần kiểm tra hôm nay không đổi so với hôm qua.';
+}
+function checkDailyRollover(){ if(dailyState.date!==today()){dailyState={date:today(),checkedKeys:[]};saveDailyState();yesterdayDueCount=null;todayDueCount=0;takeVocabulary();} }
 
 /* ============================================================
    IMPORT JSON
@@ -566,6 +982,7 @@ function saveWords(words) {
         existing.created_date      = existing.created_date || w.created_date || todayDate;
         existing.correct_count     = existing.correct_count !== undefined ? existing.correct_count : Number(w.correct_count || 0);
         existing.wrong_count       = existing.wrong_count   !== undefined ? existing.wrong_count   : Number(w.wrong_count   || 0);
+        existing.phonetic          = existing.phonetic      !== undefined ? existing.phonetic      : (w.phonetic || "");
         existing.example           = existing.example       !== undefined ? existing.example       : (w.example || "");
         store.put(existing);
         countUpdate++;
@@ -575,6 +992,7 @@ function saveWords(words) {
           word:              w.word,
           type:              w.type,
           mean:              w.mean,
+          phonetic:          w.phonetic || "",
           example:           w.example || "",
           sum_point_reading: Math.round(Number(w.sum_point_reading || 0) * 100) / 100,
           next_reading_time: w.next_reading_time || todayDate,
@@ -607,6 +1025,7 @@ function exportJSON() {
       word:              w.word,
       type:              w.type,
       mean:              w.mean,
+      phonetic:          w.phonetic || "",
       example:           w.example || "",
       sum_point_reading: w.sum_point_reading,
       next_reading_time: w.next_reading_time,
@@ -629,6 +1048,8 @@ function exportJSON() {
 let words = [], count = -1, endCount = 0;
 
 function takeVocabulary() {
+  readDailyState();
+  readDueSnapshot();
   showLearnBtns(true);
   getStore("readonly").getAll().onsuccess = e => {
     const todayDate = today();
@@ -638,12 +1059,16 @@ function takeVocabulary() {
     endCount = words.length;
     count    = -1;
     setWordCountBadge(endCount);
+    ensureTodayDueSnapshot(endCount);
     if (words.length === 0) {
       setEl("word", "Hôm nay không có bài.");
+      setEl("answer", "");
       showLearnBtns(false);
+      renderAchievement();
       return;
     }
     nextWord();
+    renderAchievement();
   };
 }
 
@@ -677,10 +1102,12 @@ function showWord() {
   const color = w.status === 1 ? "green" : w.status === 0 ? "red" : "var(--fg)";
 
   setEl("word", `
-    <button id="suggest-btn" onclick="showSuggest()">💡 Suggest</button>
+    <button id="suggest-btn" type="button" onclick="showSuggest()">💡 Suggest</button>
     <div id="word-row">
-      <div id="sentence" style="color:${color}">${w.word}</div>
-      <button onclick="revealAnswer()">Answer</button>
+      <div class="word-main">
+        <div id="sentence" style="color:${color}">${escapeHtml(w.word)}</div>
+      </div>
+      <button type="button" onclick="revealAnswer()">Answer</button>
     </div>
     <div id="suggest-box"></div>
   `);
@@ -705,20 +1132,34 @@ function showSuggest() {
 }
 
 function revealAnswer() {
-  const w   = words[count];
+  const w = words[count];
   const box = document.getElementById("answer");
   if (revealStep === 0) {
-    box.innerHTML = `<div style="font-size:24px">(${w.type})</div>`;
+    const phonetic = String(w.phonetic || "").trim();
+    if (phonetic) {
+      setEl("word", `
+        <button id="suggest-btn" type="button" onclick="showSuggest()">💡 Suggest</button>
+        <div id="word-row">
+          <div class="word-main">
+            <div id="sentence" style="color:var(--fg)">${escapeHtml(w.word)}</div>
+            <div class="phonetic">${escapeHtml(phonetic)}</div>
+          </div>
+          <button type="button" onclick="revealAnswer()">Answer</button>
+        </div>
+        <div id="suggest-box"></div>
+      `);
+    }
+    box.innerHTML = `<div class="answer-step" style="color:var(--muted)">${phonetic ? 'Phiên âm đã hiện ở dưới word' : 'Từ này chưa có phiên âm'}</div>`;
     revealStep = 1;
     return;
   }
   if (revealStep === 1) {
-    showFullCard();
+    box.innerHTML = `<div class="answer-step answer-type">(${escapeHtml(w.type)})</div>`;
     revealStep = 2;
     return;
   }
-  box.innerHTML = w.status === -1 ? `<button onclick="markNx()">x N_point</button>` : "";
-  revealStep = 0;
+  showFullCard();
+  revealStep = 3;
 }
 
 function showFullCard() {
@@ -739,6 +1180,7 @@ function markNx() { words[count].Nx_points = 1; setEl("answer", ""); }
 function mark(status) {
   words[count].status = status;
   revealStep = 0;
+  markDailyChecked(words[count]);
   const s = document.querySelector("#word-row #sentence");
   if (s) s.style.color = status === 1 ? "green" : "red";
   if (status === 1) nextWord();
@@ -904,7 +1346,7 @@ function renderTableResults() {
     <div id="table-wrap">
       <table id="debug-table">
         <tr>
-          <th>Word</th><th>Type</th><th>Mean</th><th>Example</th>
+          <th>Word</th><th>Phonetic</th><th>Type</th><th>Mean</th><th>Example</th>
           <th>Point</th><th>Next</th><th>✅</th><th>❌</th><th>Ngày tạo</th><th>Action</th>
         </tr>
   `;
@@ -914,8 +1356,9 @@ function renderTableResults() {
     const ex  = w.example || "";
     html += `
       <tr id="row-idx-${idx}" class="data-row">
-        <td>${w.word}</td>
-        <td>${w.type}</td>
+        <td>${escapeHtml(w.word)}</td>
+        <td class="col-phonetic">${escapeHtml(w.phonetic || '')}</td>
+        <td>${escapeHtml(w.type)}</td>
         <td class="col-mean">${w.mean}</td>
         <td class="col-example">${ex}</td>
         <td>${Number(w.sum_point_reading).toFixed(2)}</td>
@@ -966,6 +1409,7 @@ function showCreateForm() {
     <div id="edit-box">
       <b style="font-size:22px">Tạo mới từ</b>
       <label>Word:    <input id="e_word"    autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false"></label>
+      <label>Phonetic: <input id="e_phonetic" autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" placeholder="/.../"></label>
       <label>Type:    <input id="e_type"    autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false"></label>
       <label>Mean:    <input id="e_mean"    autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false"></label>
       <label>Example: <input id="e_example" autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false"></label>
@@ -979,6 +1423,7 @@ function showCreateForm() {
 
 function saveNewWord() {
   const word    = document.getElementById("e_word").value.trim().toLowerCase();
+  const phonetic = document.getElementById("e_phonetic").value.trim();
   const type    = document.getElementById("e_type").value.trim().toLowerCase();
   const mean    = document.getElementById("e_mean").value.trim().toLowerCase();
   const example = document.getElementById("e_example").value.trim();
@@ -989,7 +1434,7 @@ function saveNewWord() {
 
   const tx = db.transaction("words", "readwrite");
   tx.objectStore("words").add({
-    key, word, type, mean, example,
+    key, word, phonetic, type, mean, example,
     sum_point_reading: 0,
     next_reading_time: todayDate,
     created_date:      todayDate,
@@ -1017,9 +1462,10 @@ function editWord(idx) {
     const exVal = (w.example || "").replace(/"/g, '&quot;');
 
     row.innerHTML = `
-      <td><input id="ew_word_${idx}"    value="${w.word}"  autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:100%;font-size:18px;padding:6px"></td>
-      <td><input id="ew_type_${idx}"    value="${w.type}"  autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:60px;font-size:18px;padding:6px"></td>
-      <td><input id="ew_mean_${idx}"    value="${w.mean}"  autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:100%;font-size:18px;padding:6px"></td>
+      <td><input id="ew_word_${idx}"    value="${escapeAttr(w.word)}"  autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:100%;font-size:18px;padding:6px"></td>
+      <td><input id="ew_phonetic_${idx}" value="${escapeAttr(w.phonetic || '')}" placeholder="/.../" autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:100%;font-size:18px;padding:6px"></td>
+      <td><input id="ew_type_${idx}"    value="${escapeAttr(w.type)}"  autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:60px;font-size:18px;padding:6px"></td>
+      <td><input id="ew_mean_${idx}"    value="${escapeAttr(w.mean)}"  autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:100%;font-size:18px;padding:6px"></td>
       <td class="col-example"><input id="ew_example_${idx}" value="${exVal}" autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:100%;font-size:18px;padding:6px"></td>
       <td><input id="ew_read_${idx}"    value="${Number(w.sum_point_reading).toFixed(2)}" autocomplete="off" style="width:70px;font-size:18px;padding:6px"></td>
       <td><input id="ew_next_${idx}"    value="${w.next_reading_time}" autocomplete="off" style="width:110px;font-size:18px;padding:6px"></td>
@@ -1040,6 +1486,7 @@ function saveEdit(idx) {
 
   const g       = id => document.getElementById(id);
   const word    = g(`ew_word_${idx}`).value.trim();
+  const phonetic = g(`ew_phonetic_${idx}`).value.trim();
   const type    = g(`ew_type_${idx}`).value.trim();
   const mean    = g(`ew_mean_${idx}`).value.trim();
   const example = g(`ew_example_${idx}`).value.trim();
@@ -1054,7 +1501,7 @@ function saveEdit(idx) {
     const newKey   = `${word}|${type}|${mean}`;
     const item     = {
       key:               newKey,
-      word, type, mean, example,
+      word, phonetic, type, mean, example,
       sum_point_reading: read,
       next_reading_time: next,
       created_date:      existing.created_date  || today(),
@@ -1098,7 +1545,9 @@ function deleteAllWords() {
     if (debugVisible) debugShowAll();
   });
 }
-</script>
 
-</body>
+loadTheme();
+setInterval(checkDailyRollover, 60 * 1000);
+
+</script>
 </html>
