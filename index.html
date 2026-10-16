@@ -500,6 +500,25 @@
       text-align: center;
     }
 
+    #s_study_order {
+      width: min(230px, 52%);
+      min-width: 0;
+      padding: 9px 8px;
+      border: 2px solid var(--input-border);
+      border-radius: 8px;
+      background: var(--input-bg);
+      color: var(--fg);
+      font: inherit;
+      font-size: 15px;
+    }
+
+    .study-order-note {
+      margin: -5px 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
     #settingsSaveBtn {
       width: 100%;
       margin-top: 5px;
@@ -690,8 +709,16 @@
 
   <div id="settingsOverlay" onclick="closeSettingsIfOutside(event)">
     <div id="settingsPanel" role="dialog" aria-modal="true" aria-label="Cài đặt thuật toán">
-      <h4>⚙️ Cài đặt thuật toán</h4>
-      <div class="settings-note">Giữ nguyên các tham số của công thức điểm hiện tại.</div>
+      <h4>⚙️ Cài đặt</h4>
+      <div class="setting-row">
+        <label for="s_study_order">Thứ tự kiểm tra từ<br><small>Chọn cách lấy từ để học</small></label>
+        <select id="s_study_order" onchange="changeStudyOrder()">
+          <option value="points">Mặc định (điểm thấp trước)</option>
+          <option value="random">Ngẫu nhiên</option>
+        </select>
+      </div>
+      <div class="study-order-note">Thay đổi sẽ được lưu ngay và tải lại danh sách từ hôm nay.</div>
+      <div class="settings-note">Tham số công thức tính điểm:</div>
       <div class="setting-row"><label>Nx multiplier<br><small>nhân điểm khi bấm N_point</small></label><input type="number" id="s_nx" step="0.1" min="1"></div>
       <div class="setting-row"><label>Bonus base<br><small>điểm cộng cố định khi đúng / trừ khi sai &lt;10</small></label><input type="number" id="s_bonus_base" step="0.1" min="0"></div>
       <div class="setting-row"><label>Bonus divisor<br><small>chia điểm hiện tại để tính bonus</small></label><input type="number" id="s_bonus_div" step="0.1" min="0.1"></div>
@@ -763,14 +790,16 @@ if (jsonFileEl) jsonFileEl.addEventListener("change", () => {
    SETTINGS
 ============================================================ */
 const SETTINGS_KEY     = STORAGE_NS + "vocab_settings";
-const DEFAULT_SETTINGS = { nx: 1.5, bonus_base: 1.5, bonus_div: 5.5, nx_threshold: 45 };
+const DEFAULT_SETTINGS = { nx: 1.5, bonus_base: 1.5, bonus_div: 5.5, nx_threshold: 45, studyOrder: "points" };
 let cfg = { ...DEFAULT_SETTINGS };
 
 function loadSettings() {
   try {
     const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY));
-    if (saved) cfg = { ...DEFAULT_SETTINGS, ...saved };
+    if (saved && typeof saved === "object") cfg = { ...DEFAULT_SETTINGS, ...saved };
   } catch { }
+  // Tương thích với cấu hình cũ chưa có chế độ chọn thứ tự từ.
+  if (cfg.studyOrder !== "random") cfg.studyOrder = "points";
 }
 
 function openSettings() {
@@ -779,7 +808,19 @@ function openSettings() {
   document.getElementById("s_bonus_base").value   = cfg.bonus_base;
   document.getElementById("s_bonus_div").value    = cfg.bonus_div;
   document.getElementById("s_nx_threshold").value = cfg.nx_threshold;
+  document.getElementById("s_study_order").value  = cfg.studyOrder;
   document.getElementById("settingsOverlay").classList.add("open");
+}
+
+function changeStudyOrder() {
+  const selector = document.getElementById("s_study_order");
+  const nextOrder = selector && selector.value === "random" ? "random" : "points";
+  if (nextOrder === cfg.studyOrder) return;
+
+  cfg.studyOrder = nextOrder;
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(cfg));
+  // Tải lại ngay danh sách học hôm nay theo thứ tự vừa chọn.
+  if (db) takeVocabulary();
 }
 
 function saveSettings() {
@@ -787,6 +828,8 @@ function saveSettings() {
   cfg.bonus_base   = Number(document.getElementById("s_bonus_base").value)   || DEFAULT_SETTINGS.bonus_base;
   cfg.bonus_div    = Number(document.getElementById("s_bonus_div").value)    || DEFAULT_SETTINGS.bonus_div;
   cfg.nx_threshold = Number(document.getElementById("s_nx_threshold").value) || DEFAULT_SETTINGS.nx_threshold;
+  const selector = document.getElementById("s_study_order");
+  cfg.studyOrder = selector && selector.value === "random" ? "random" : "points";
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(cfg));
   document.getElementById("settingsOverlay").classList.remove("open");
 }
@@ -1047,7 +1090,16 @@ function takeVocabulary() {
   getStore("readonly").getAll().onsuccess = e => {
     const todayDate = today();
     words = e.target.result.filter(w => todayDate >= w.next_reading_time);
-    words.sort((a, b) => a.sum_point_reading - b.sum_point_reading);
+    if (cfg.studyOrder === "random") {
+      // Fisher–Yates: xáo trộn ngẫu nhiên không thiên lệch thứ tự.
+      for (let i = words.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [words[i], words[j]] = [words[j], words[i]];
+      }
+    } else {
+      // Chế độ mặc định: từ có điểm ôn thấp hơn được kiểm tra trước.
+      words.sort((a, b) => (Number(a.sum_point_reading) || 0) - (Number(b.sum_point_reading) || 0));
+    }
     words.forEach(w => { w.Nx_points = 0; w.status = -1; });
     endCount = words.length;
     count    = -1;
