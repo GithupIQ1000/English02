@@ -140,13 +140,13 @@
     }
 
     /* ============================================================
-       DAILY ACHIEVEMENT
+       DAILY ACHIEVEMENT — compact
     ============================================================ */
     #achievement-card {
-      margin: 14px 0 16px;
-      padding: 15px;
-      border: 2px solid var(--border);
-      border-radius: 14px;
+      margin: 10px 0 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
       background: var(--panel);
     }
 
@@ -154,53 +154,53 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 12px;
+      gap: 8px;
+      margin-bottom: 8px;
     }
 
     .achievement-title {
       font-weight: 800;
-      font-size: 21px;
+      font-size: 16px;
     }
 
     .achievement-date {
       color: var(--muted);
-      font-size: 14px;
+      font-size: 12px;
       white-space: nowrap;
     }
 
     .achievement-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
     }
 
     .stat-box {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 8px;
+      min-width: 0;
+      padding: 0 8px;
       text-align: center;
-      background: var(--panel-2);
+      background: transparent;
+    }
+
+    .stat-box + .stat-box {
+      border-left: 1px solid var(--input-border);
     }
 
     .stat-label {
       display: block;
       color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 3px;
+      font-size: 12px;
+      line-height: 1.2;
+      margin-bottom: 2px;
+      overflow-wrap: anywhere;
     }
 
     .stat-value {
       display: block;
-      font-size: 22px;
+      font-size: 18px;
+      line-height: 1.2;
       font-weight: 800;
-    }
-
-    .achievement-note {
-      margin-top: 10px;
-      min-height: 22px;
-      color: var(--muted);
-      font-size: 15px;
+      overflow-wrap: anywhere;
     }
 
     /* ============================================================
@@ -630,26 +630,14 @@
       body { font-size: 18px; }
       .app-wrap { padding-left: 10px; padding-right: 10px; }
 
-      /* 3 ô thành tích luôn giữ đúng 1 hàng ngang trên mobile */
-      .achievement-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 6px;
-      }
-      .stat-box {
-        min-width: 0;
-        padding: 9px 4px;
-      }
-      .stat-label {
-        font-size: 10.5px;
-        line-height: 1.2;
-        min-height: 2.4em;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .stat-value { font-size: 19px; }
-
-      .achievement-head { align-items: flex-start; flex-direction: column; }
+      /* Thành tích vẫn gọn trên một hàng ở màn hình nhỏ */
+      .achievement-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .stat-box { padding: 0 5px; }
+      .stat-label { font-size: 10.5px; line-height: 1.2; }
+      .stat-value { font-size: 17px; }
+      .achievement-head { align-items: center; flex-direction: row; }
+      .achievement-title { font-size: 15px; }
+      .achievement-date { font-size: 11px; }
       #word-row {
         grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr);
         column-gap: 6px;
@@ -672,18 +660,7 @@
       table { font-size: 17px; }
       .search-row input { font-size: 19px; }
     }
-  
-    /* Thành tích hôm nay: luôn 3 ô trên một hàng, kể cả mobile */
-    .achievement-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
-    .stat-box { min-width: 0; padding: 10px 5px; }
-    .stat-label, .stat-value { overflow-wrap: anywhere; }
-    @media (max-width: 440px) {
-      .achievement-title { font-size: 18px; }
-      .achievement-date { font-size: 12px; }
-      .stat-label { font-size: 11px; }
-      .stat-value { font-size: 18px; }
-      .achievement-card { min-width: 0; }
-    }
+
   </style></head>
 <body class="dark">
   <button id="menuBtn" type="button" onclick="toggleMenu()" aria-label="Mở menu" title="Menu">☰</button>
@@ -704,7 +681,7 @@
       <div class="menu-actions">
         <button type="button" onclick="importJSON(); closeMenu()">Nhập dữ liệu</button>
         <button type="button" onclick="exportJSON(); closeMenu()">Xuất JSON</button>
-        <button type="button" onclick="toggleDebug(); closeMenu()">Show DS</button>
+        <button id="btnToggleDebug" type="button" onclick="toggleDebug(); closeMenu()">Show DS</button>
         <button type="button" onclick="deleteAllWords(); closeMenu()">Xóa toàn bộ</button>
       </div>
       <div class="menu-note">Giao diện và bố cục lấy theo bản 2; toàn bộ logic học/điểm vẫn theo index.html.</div>
@@ -738,7 +715,6 @@
         <div class="stat-box"><span class="stat-label">Cần kiểm tra</span><span id="stat-due" class="stat-value">0</span></div>
         <div class="stat-box"><span class="stat-label">So với hôm qua</span><span id="stat-delta" class="stat-value">—</span></div>
       </div>
-      <div id="achievement-note" class="achievement-note" aria-live="polite"></div>
     </section>
     <hr>
 
@@ -756,9 +732,14 @@
 <script>
 
 /* ============================================================
-   THEME
+   DATABASE / STORAGE NAMESPACE
+   - This page is isolated from other language pages.
+   - Chinese page: MyDB
+   - English page can use: MyDB_English
 ============================================================ */
-const THEME_KEY = "vocab_theme";
+const DB_NAME = "MyDB";
+const STORAGE_NS = DB_NAME + ":";
+const THEME_KEY = STORAGE_NS + "vocab_theme";
 let isDark = true;
 function applyTheme(dark){ isDark=!!dark; document.body.classList.toggle('dark',isDark); const b=document.getElementById('themeBtn'); if(b)b.textContent=isDark?'☀️':'🌙'; }
 function loadTheme(){ applyTheme(localStorage.getItem(THEME_KEY)!=='light'); }
@@ -781,7 +762,7 @@ if (jsonFileEl) jsonFileEl.addEventListener("change", () => {
 /* ============================================================
    SETTINGS
 ============================================================ */
-const SETTINGS_KEY     = "vocab_settings";
+const SETTINGS_KEY     = STORAGE_NS + "vocab_settings";
 const DEFAULT_SETTINGS = { nx: 1.5, bonus_base: 1.5, bonus_div: 5.5, nx_threshold: 45 };
 let cfg = { ...DEFAULT_SETTINGS };
 
@@ -819,7 +800,7 @@ function closeSettingsIfOutside(e) {
    INDEXEDDB
 ============================================================ */
 let db;
-const dbReq = indexedDB.open("MyDB", 1);
+const dbReq = indexedDB.open(DB_NAME, 1);
 
 dbReq.onupgradeneeded = e => {
   const d = e.target.result;
@@ -886,8 +867,8 @@ function keyByIndex(i) { return _keyMap[i]; }
    DAILY ACHIEVEMENT — chỉ thêm phần thống kê, không thay đổi
    logic học/điểm/lịch ôn của index.html
 ============================================================ */
-const DAILY_KEY = "vocab_daily_state";
-const DUE_SNAPSHOT_KEY = "vocab_due_snapshot";
+const DAILY_KEY = STORAGE_NS + "vocab_daily_state";
+const DUE_SNAPSHOT_KEY = STORAGE_NS + "vocab_due_snapshot";
 let dailyState = { date: today(), checkedKeys: [] };
 let yesterdayDueCount = null;
 let todayDueCount = 0;
@@ -925,12 +906,24 @@ function ensureTodayDueSnapshot(n){
 }
 function markDailyChecked(w){ const key=w.key || `${w.word}|${w.type}|${w.mean}`; if(!dailyState.checkedKeys.includes(key)){dailyState.checkedKeys.push(key);saveDailyState();} renderAchievement(); }
 function renderAchievement(){
-  const a=document.getElementById('achievement-date'),c=document.getElementById('stat-checked'),d=document.getElementById('stat-due'),delta=document.getElementById('stat-delta'),note=document.getElementById('achievement-note');
-  if(!a||!c||!d||!delta||!note)return;
-  c.textContent=dailyState.checkedKeys.length; d.textContent=todayDueCount; a.textContent=today();
-  if(yesterdayDueCount===null){delta.textContent='—';note.textContent='';note.style.display='none';return;}
-  note.style.display='block'; const diff=todayDueCount-yesterdayDueCount; delta.textContent=diff>0?`+${diff}`:String(diff);
-  note.textContent=diff>0?`Hôm nay có thêm ${diff} từ cần kiểm tra so với hôm qua.`:diff<0?`Hôm nay có ít hơn ${Math.abs(diff)} từ cần kiểm tra so với hôm qua.`:'Số từ cần kiểm tra hôm nay không đổi so với hôm qua.';
+  const a = document.getElementById('achievement-date');
+  const c = document.getElementById('stat-checked');
+  const d = document.getElementById('stat-due');
+  const delta = document.getElementById('stat-delta');
+  if (!a || !c || !d || !delta) return;
+
+  c.textContent = dailyState.checkedKeys.length;
+  d.textContent = todayDueCount;
+  const date = today();
+  a.textContent = `${date.slice(8, 10)}/${date.slice(5, 7)}`;
+
+  if (yesterdayDueCount === null) {
+    delta.textContent = '—';
+    return;
+  }
+
+  const diff = todayDueCount - yesterdayDueCount;
+  delta.textContent = diff > 0 ? `+${diff}` : String(diff);
 }
 function checkDailyRollover(){ if(dailyState.date!==today()){dailyState={date:today(),checkedKeys:[]};saveDailyState();yesterdayDueCount=null;todayDueCount=0;takeVocabulary();} }
 
@@ -1240,7 +1233,11 @@ function saveVocabulary() {
       );
   
       if (diffDay > 1) {
-        point += diffDay;
+        if (diffDay <= 60){
+            point += diffDay;
+        } else {
+            point += Math.round(diffDay / 2);
+        }
       }
       newDate.setDate(newDate.getDate() + Math.round(point));
     } else {
@@ -1293,9 +1290,10 @@ let debugVisible = false;
 
 function toggleDebug() {
   debugVisible = !debugVisible;
-  document.getElementById("btnToggleDebug").textContent = debugVisible ? "Hide DS" : "Show DS";
+  const btn = document.getElementById("btnToggleDebug");
+  if (btn) btn.textContent = debugVisible ? "Hide DS" : "Show DS";
   if (debugVisible) debugShowAll();
-  else              setEl("debug-output", "");
+  else setEl("debug-output", "");
 }
 
 /* ============================================================
@@ -1441,7 +1439,19 @@ function saveNewWord() {
     wrong_count:       0
   });
 
-  tx.oncomplete = () => { alert("Đã tạo từ!"); takeVocabulary(); debugShowAll(); };
+  tx.oncomplete = () => {
+    alert("Đã tạo từ!");
+    takeVocabulary();
+    debugShowAll();
+  };
+  tx.onerror = e => {
+    if (e.target?.error?.name === "ConstraintError") {
+      alert("Từ này đã tồn tại (trùng Word + Type + Mean)!");
+    } else {
+      console.error(e.target?.error);
+      alert("Không thể tạo từ!");
+    }
+  };
 }
 
 /* ============================================================
@@ -1492,7 +1502,8 @@ function saveEdit(idx) {
   const read    = Number(g(`ew_read_${idx}`).value.trim());
   const next    = g(`ew_next_${idx}`).value.trim();
 
-  if (!word || !type || !mean)            return alert("Thiếu dữ liệu!");
+  if (!word || !type || !mean)              return alert("Thiếu dữ liệu!");
+  if (!Number.isFinite(read) || read < 0)  return alert("Point không hợp lệ!");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(next)) return alert("Ngày phải theo định dạng YYYY-MM-DD");
 
   getStore("readonly").get(oldKey).onsuccess = e => {
@@ -1511,8 +1522,26 @@ function saveEdit(idx) {
     const tx    = db.transaction("words", "readwrite");
     const store = tx.objectStore("words");
     if (newKey !== oldKey) store.delete(oldKey);
-    store.put(item);
-    tx.oncomplete = () => { alert("Đã lưu!"); takeVocabulary(); debugShowAll(); };
+    try {
+      store.put(item);
+    } catch (err) {
+      console.error(err);
+      alert("Không thể lưu từ!");
+      return;
+    }
+    tx.oncomplete = () => {
+      alert("Đã lưu!");
+      takeVocabulary();
+      debugShowAll();
+    };
+    tx.onerror = e => {
+      if (e.target?.error?.name === "ConstraintError") {
+        alert("Không thể lưu: Word + Type + Mean bị trùng!");
+      } else {
+        console.error(e.target?.error);
+        alert("Không thể lưu từ!");
+      }
+    };
   };
 }
 
@@ -1526,18 +1555,27 @@ function deleteWord(idx) {
 
   const tx = db.transaction("words", "readwrite");
   tx.objectStore("words").delete(key);
-  tx.oncomplete = () => { alert("Đã xóa!"); takeVocabulary(); debugShowAll(); };
-  tx.onerror    = () => alert("Không thể xóa!");
+  tx.oncomplete = () => {
+    alert("Đã xóa!");
+    takeVocabulary();
+    debugShowAll();
+  };
+  tx.onerror = e => {
+    console.error(e.target?.error);
+    alert("Không thể xóa!");
+  };
 }
 
 function clearAllWords(callback) {
+  // IMPORTANT: this only clears the `words` store inside DB_NAME (MyDB).
+  // It cannot affect MyDB_English or any other IndexedDB database.
   const tx = db.transaction("words", "readwrite");
   tx.objectStore("words").clear();
   tx.oncomplete = () => { if (callback) callback(); };
 }
 
 function deleteAllWords() {
-  if (!confirm("Xóa toàn bộ dữ liệu? Không thể hoàn tác!")) return;
+  if (!confirm("Xóa toàn bộ dữ liệu của MyDB? Không thể hoàn tác!")) return;
   clearAllWords(() => {
     alert("Đã xóa toàn bộ!");
     takeVocabulary();
